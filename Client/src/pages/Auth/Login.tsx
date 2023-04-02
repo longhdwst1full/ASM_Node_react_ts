@@ -1,9 +1,8 @@
-import axios from "axios";
+
 import { useForm } from "react-hook-form";
 import { UserLogin } from "../../types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import intace from "../../Apis/https";
 import { loginSubmit } from "../../Apis/auth";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";

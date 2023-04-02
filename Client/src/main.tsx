@@ -22,39 +22,35 @@ function RejectedRoute() {
     ? JSON.parse(localStorage.getItem("user") as string)
     : "";
 
-  return !dataLS  ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/login" />
-  );
+  return !dataLS  ?  <Outlet /> :  <Navigate to="/" />
 }
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }): React.ReactElement | null => {
   const dataLS = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") as string)
-    : "";
+  ? JSON.parse(localStorage.getItem("user") as string)
+  : "";
   return dataLS && dataLS.user.role=== "admin" ? <>{children}</> : <Navigate to="/login" />;
 };
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RejectedRoute />,
-    children: [
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/register",
-        element: <Register />,
-      },
-    ],
+    element: <App />,
   },
   {
     path: "/",
-    element: <App />,
+    element: <RejectedRoute />,
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+    ],
   },
 
   {
@@ -104,11 +100,7 @@ const router = createBrowserRouter([
         ],
       },
     ],
-  },
-  {
-    path: "/products",
-    element: <ListProduct />,
-  },
+  }
 ]);
 const queryClient = new QueryClient();
 

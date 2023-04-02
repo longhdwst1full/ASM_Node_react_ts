@@ -28,9 +28,33 @@ const deleteProducts = ({
 }) =>
   intace.delete("/delete-product/" + id, {
     headers: {
-      "Authorization": "Bearer " + accessToken,
-      "Content-Type": "application/json"
+      Authorization: "Bearer " + accessToken,
+      "Content-Type": "application/json",
     },
   });
 
-export { createProducts, productList1, getOneProduct, deleteProducts };
+const udpateProducts = ({
+  body,
+  id,
+  accessToken,
+}: {
+  body: Omit<Product,"_id"|"__v">;
+  id: string;
+  accessToken: string;
+}) => {
+  console.log(accessToken,id,body," admin");
+ return intace.patch(`/edit-product/${id}`, body, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export {
+  createProducts,
+  productList1,
+  udpateProducts,
+  getOneProduct,
+  deleteProducts,
+};

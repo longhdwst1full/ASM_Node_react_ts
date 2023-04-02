@@ -1,7 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { string } from "yup";
 import { deleteProducts, productList1 } from "../../../Apis/products";
 import { Product } from "../../../types";
 import { toast } from "react-toastify";
@@ -9,10 +8,12 @@ import { toast } from "react-toastify";
 type ProductType = Pick<Product, "_id" | "name" | "image">[];
 export default function ListProduct() {
   const [products, setProductList] = useState<ProductType>([]);
-  const accessToken = useMemo(
-    () => localStorage.getItem("accessToken") || "",
-    []
-  );
+  const accessToken = useMemo(() => {
+    const dataLS = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user") as string)
+      : "";
+      return dataLS.accessToken
+  }, []);
   // delete
   const deleteProductsMutation = useMutation({
     mutationFn: (id: string) => deleteProducts({ id, accessToken }),
@@ -21,11 +22,13 @@ export default function ListProduct() {
     },
   });
 
-  useEffect(() => {
-    productList1().then((data) => {
+  const getDataList = useQuery({
+    queryKey: ["Products"],
+    queryFn: productList1,
+    onSuccess: (data) => {
       setProductList(data.data);
-    });
-  }, []);
+    },
+  });
 
   const handleDelete = (id: string) => {
     deleteProductsMutation.mutate(id);
@@ -51,7 +54,7 @@ export default function ListProduct() {
                   Price
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  <Link to="/products/add">Add</Link>
+                  <Link to="/admin/product/add">Add</Link>
                 </th>
                 <th scope="col" className="px-6 py-3">
                   <span className="sr-only">Delete</span>
@@ -78,7 +81,7 @@ export default function ListProduct() {
                     <td className="px-6 py-4">$2999</td>
                     <td className="px-6 py-4 text-right">
                       <Link
-                        to={`/products/edit/${product._id}`}
+                        to={`/admin/product/${product._id}/edit`}
                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                       >
                         Edit

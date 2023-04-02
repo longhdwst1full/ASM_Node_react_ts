@@ -7,6 +7,7 @@ export default function LayoutAdmin() {
   return (
     <div>
       <Header />
+     
       <Outlet/>
     </div>
   );
