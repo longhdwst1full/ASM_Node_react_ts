@@ -1,34 +1,43 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataAuthResponse, Product } from "../../../types";
 import * as yup from "yup";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import {
   createProducts,
   getOneProduct,
   udpateProducts,
 } from "../../../Apis/products";
-import { useMatch, useParams } from "react-router-dom";
+import { useMatch, useNavigate, useParams } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { cateList } from "../../../Apis/category";
+import { toast } from "react-toastify";
 
 const validateForm = yup.object({
   name: yup.string().required(),
   description: yup.string().required(),
-  image: yup.string(),
+  category: yup.string().required(),
+  image: yup.string().required(),
+  price: yup.string().required(),
 });
 
-type ProductForm = Omit<Product, "__v" | "_id">;
+type ProductForm = Omit<Product, "_id">;
 const initiaFormState = {
   name: "",
   description: "",
   image: "",
+  price: "",
+  category: "",
 };
+type FormData = yup.InferType<typeof validateForm>;
 
 export default function Addproduct() {
   const [formData, setFormData] = useState<ProductForm>(initiaFormState);
   const { id } = useParams();
   const idParams = id as string;
-  const isEdeting = useMatch("admin/product/add/");
+  const isEdeting = useMatch("/admin/product/add");
   const isModel = Boolean(isEdeting);
-
+  const navigate = useNavigate();
   const authentication = useMemo(() => {
     const dataLS = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user") as string)
@@ -38,7 +47,17 @@ export default function Addproduct() {
       .accessToken;
     return accessToken;
   }, []);
-  // console.log(authentication, "check auth");
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    setValue,
+  } = useForm<FormData>({
+    defaultValues: initiaFormState,
+    resolver: yupResolver(validateForm),
+  });
 
   const addProductMutation = useMutation({
     mutationFn: (body: ProductForm) =>
@@ -48,45 +67,61 @@ export default function Addproduct() {
       console.log(variables, "variables");
     },
     onSuccess(data, variables, context) {
-      console.log(data, "data mutation");
+      // console.log(data, "data mutation");
+      reset();
+      toast.success("them thanh cong");
+      navigate("/admin/products");
     },
   });
 
   const updateProductMutation = useMutation({
     mutationFn: (body: ProductForm) => {
       console.log("check id , authe", id, authentication, body);
-      return udpateProducts({ body, id:idParams, accessToken: authentication });
+      return udpateProducts({
+        body,
+        id: idParams,
+        accessToken: authentication,
+      });
     },
     onError(error, variables, context) {
       console.log(error);
       console.log(variables, "variables");
     },
     onSuccess(data, variables, context) {
-      console.log(data, "data mutation");
+      // console.log(data, "data mutation");
+      reset();
+      toast.success("Sua thanh cong");
+      navigate("/admin/products");
     },
   });
   const editQuery = useQuery({
     queryKey: ["products", id],
     queryFn: () => getOneProduct(id as string),
     enabled: id !== undefined,
-    onSuccess(data) {
-      console.log(data.data);
-      // setFormData(data.data);
+    onSuccess({ data }) {
+      // console.log(data);
+      setValue("name", data.name);
+      setValue("price", data.price);
+      setValue("image", data.image);
+      setValue("description", data.description);
     },
   });
+  // getCategory
 
-  const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const { data: categoryList } = useQuery({
+    queryKey: ["getCategory"],
+    queryFn: cateList,
+  });
+
+  const handleSubmitForm = async (data: FormData) => {
     try {
       if (isModel) {
-        const dataRes = await addProductMutation.mutateAsync(formData);
+        const dataRes = await addProductMutation.mutateAsync(data);
         console.log("data: ", dataRes);
       } else {
-        console.log("check mutaition :", formData);
-        updateProductMutation.mutate(formData);
+        console.log("check mutaition :", data);
+        updateProductMutation.mutate(data);
       }
-
-      setFormData(initiaFormState);
     } catch (error) {
       console.log(error);
     }
@@ -96,7 +131,10 @@ export default function Addproduct() {
       <p className="text-center mt-3 text-2xl font-semibold">
         {isModel && !id ? "Add products" : "Edit product"}
       </p>
-      <form className="container m-auto" onSubmit={handleSubmitForm}>
+      <form
+        className="container m-auto"
+        onSubmit={handleSubmit(handleSubmitForm)}
+      >
         <div className="mb-6">
           <label
             htmlFor="title"
@@ -109,11 +147,51 @@ export default function Addproduct() {
             id="title"
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             placeholder=""
-            value={formData.name}
-            onChange={(e) =>
-              setFormData((pre) => ({ ...pre, name: e.target.value }))
-            }
+            {...register("name")}
           />
+          <p className="text-red-500 my-1">{errors.name?.message}</p>
+        </div>
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <div>
+            <fieldset className="w-full space-y-1 dark:text-gray-100">
+              <label htmlFor="price" className="block text-sm font-medium">
+                Price
+              </label>
+              <div className="flex">
+                <input
+                  type="number"
+                  {...register("price")}
+                  id="price"
+                  placeholder="99 999,99"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                />
+              </div>
+              <p className="text-red-500 my-1">{errors.price?.message}</p>
+            </fieldset>
+          </div>
+          <div>
+            <label
+              htmlFor="countries"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Category
+            </label>
+
+            <select
+              id="countries"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              {...register("category")}
+            >
+              <option defaultChecked>Choose a </option>
+              {categoryList?.data &&
+                categoryList.data.map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.name}
+                  </option>
+                ))}
+            </select>
+            <p className="text-red-500 my-1">{errors.category?.message}</p>
+          </div>
         </div>
         <div className="mb-6">
           <label
@@ -125,14 +203,11 @@ export default function Addproduct() {
           <input
             type="text"
             id="featuredImage"
-            value={formData.image}
-            onChange={(e) =>
-              setFormData((pre) => ({ ...pre, image: e.target.value }))
-            }
+            {...register("image")}
             className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             placeholder="Url image"
-            required
           />
+          <p className="text-red-500 my-1">{errors.image?.message}</p>
         </div>
         <div className="mb-6">
           <div>
@@ -145,18 +220,16 @@ export default function Addproduct() {
             <textarea
               id="description"
               rows={3}
-              value={formData.description}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="Your description..."
-              onChange={(e) =>
-                setFormData((pre) => ({ ...pre, description: e.target.value }))
-              }
+              {...register("description")}
             />
+            <p className="text-red-500 my-1">{errors.description?.message}</p>
           </div>
         </div>
 
         <div>
-          {isModel && Boolean(id) ? (
+          {isModel ? (
             <button
               className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 group-hover:from-purple-600 group-hover:to-blue-500 dark:text-white dark:focus:ring-blue-800"
               type="submit"

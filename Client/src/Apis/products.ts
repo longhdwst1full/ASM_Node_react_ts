@@ -5,7 +5,7 @@ const createProducts = ({
   data,
   authentication,
 }: {
-  data: Pick<Product, "name" | "image" | "description">;
+  data: Omit<Product, "_id">;
   authentication: string;
 }) =>
   intace.post("/add-product", data, {

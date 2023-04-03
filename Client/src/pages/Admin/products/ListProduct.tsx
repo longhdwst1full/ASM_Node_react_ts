@@ -4,17 +4,19 @@ import { Link, Outlet } from "react-router-dom";
 import { deleteProducts, productList1 } from "../../../Apis/products";
 import { Product } from "../../../types";
 import { toast } from "react-toastify";
+import { cateList } from "../../../Apis/category";
 
-type ProductType = Pick<Product, "_id" | "name" | "image">[];
+type ProductType = Omit<Product, "description">[];
 export default function ListProduct() {
   const [products, setProductList] = useState<ProductType>([]);
   const accessToken = useMemo(() => {
     const dataLS = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user") as string)
       : "";
-      return dataLS.accessToken
+    return dataLS.accessToken;
   }, []);
   // delete
+  // product
   const deleteProductsMutation = useMutation({
     mutationFn: (id: string) => deleteProducts({ id, accessToken }),
     onSuccess: (data, id) => {
@@ -31,9 +33,10 @@ export default function ListProduct() {
   });
 
   const handleDelete = (id: string) => {
-    deleteProductsMutation.mutate(id);
+    setProductList(products.filter((item) => item._id !== id));
+    deleteProductsMutation.mutateAsync(id);
   };
-  // console.log(products);
+
   return (
     <>
       <>
@@ -53,11 +56,10 @@ export default function ListProduct() {
                 <th scope="col" className="px-6 py-3">
                   Price
                 </th>
-                <th scope="col" className="px-6 py-3">
-                  <Link to="/admin/product/add">Add</Link>
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <span className="sr-only">Delete</span>
+                <th scope="col" colSpan={2} className="px-6 text-center py-3">
+                  <Link to="/admin/product/add" className="p-2  text-blue-600">
+                    Add
+                  </Link>
                 </th>
               </tr>
             </thead>
@@ -77,8 +79,12 @@ export default function ListProduct() {
                     <td className="px-6 py-4">
                       <img src={product.image} alt={product.name} />
                     </td>
-                    <td className="px-6 py-4">Laptop</td>
-                    <td className="px-6 py-4">$2999</td>
+                    <td className="px-6 py-4">
+                      {product.category ? product.category : ""}
+                    </td>
+                    <td className="px-6 py-4">
+                      {product.price ? product.price : "1000"}
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <Link
                         to={`/admin/product/${product._id}/edit`}

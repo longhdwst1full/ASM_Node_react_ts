@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 export interface DataAuthResponse {
-  message: string | Array<string>|Object;
+  message: string | Array<string> | Object;
   data: User;
   accessToken: string;
 }
@@ -37,5 +37,15 @@ export interface Product {
   name: string;
   description: string;
   image: string;
-  __v: number;
+  price: string;
+  category: string;
 }
+
+export interface Category {
+  _id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+const createdAt = "2023-04-03T16:10:41.220Z";
+// updatedAt: '2023-04-03T16:10:41.220Z'
