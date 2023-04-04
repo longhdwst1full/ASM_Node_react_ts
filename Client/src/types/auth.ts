@@ -32,20 +32,3 @@ export interface AxiosError<T = any> extends Error {
   toJSON: () => object;
 }
 
-export interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  image: string;
-  price: string;
-  category: string;
-}
-
-export interface Category {
-  _id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-const createdAt = "2023-04-03T16:10:41.220Z";
-// updatedAt: '2023-04-03T16:10:41.220Z'

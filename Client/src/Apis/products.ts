@@ -1,11 +1,11 @@
-import { Product } from "../types";
+import { IDataResponseProduct, IProduct } from "../types/products.type";
 import intace from "./https";
 
 const createProducts = ({
   data,
   authentication,
 }: {
-  data: Omit<Product, "_id">;
+  data: Omit<IProduct, "_id" | "updatedAt" | "createdAt">;
   authentication: string;
 }) =>
   intace.post("/add-product", data, {
@@ -15,9 +15,9 @@ const createProducts = ({
     },
   });
 
-const productList1 = async () => intace.get<Product[]>("/products");
+const productList1 = async () => intace.get<IDataResponseProduct>("/products");
 
-const getOneProduct = (id: string) => intace.get<Product>("/products/" + id);
+const getOneProduct = (id: string) => intace.get<IProduct>("/products/" + id);
 
 const deleteProducts = ({
   id,
@@ -38,12 +38,12 @@ const udpateProducts = ({
   id,
   accessToken,
 }: {
-  body: Omit<Product,"_id"|"__v">;
+  body: Omit<IProduct, "_id">;
   id: string;
   accessToken: string;
 }) => {
-  console.log(accessToken,id,body," admin");
- return intace.patch(`/edit-product/${id}`, body, {
+  // console.log(accessToken,id,body," admin");
+  return intace.patch(`/edit-product/${id}`, body, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",

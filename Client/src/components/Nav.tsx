@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-type NavMenu={
-  name: string
-  path: string
-}
+type NavMenu = {
+  name: string;
+  path: string;
+};
 export default function Nav() {
-  const nav :NavMenu[]= [
+  const nav: NavMenu[] = [
     {
       name: "Home",
       path: "/",
@@ -15,8 +15,8 @@ export default function Nav() {
       path: "/products",
     },
     {
-      name: "Users",
-      path: "/users",
+      name: "Categories",
+      path: "/Category",
     },
   ];
   return (

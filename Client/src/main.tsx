@@ -1,5 +1,5 @@
-
-import 'react-toastify/dist/ReactToastify.css';import React from "react";
+import "react-toastify/dist/ReactToastify.css";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
@@ -16,14 +16,17 @@ import ListUser from "./pages/Admin/user/ListUser";
 import Addproduct from "./pages/Admin/products/Addproduct";
 import Adduser from "./pages/Admin/user/Adduser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ProductDetail from "./pages/Product/ProductDetail";
-import ProductList from "./pages/Product/ProductList";
+import ProductDetail from "./pages/client/Product/ProductDetail";
+import ProductList from "./pages/client/Product/ProductList";
 import Dashboard from "./pages/Admin/pages/Dashboard";
 import Students from "./pages/Admin/pages/Students";
-import NotFound from "./pages/Admin/pages/NotFound";
-import AddStudent from "./pages/Admin/pages/AddStudent";
+import NotFound from "./pages/client/NotFound";
+import AddStudent from "./pages/Admin/pages/category";
 import MainLayout from "./pages/Admin/layouts/MainLayout";
 import { ToastContainer } from "react-toastify";
+import LayoutManin from "./pages/client/LayoutManin";
+import ListCate from "./pages/Admin/category/ListCate";
+import Addcate from "./pages/Admin/category/AddCate";
 
 function RejectedRoute() {
   const dataLS = localStorage.getItem("user")
@@ -48,21 +51,32 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <LayoutManin />,
     children: [
       {
         path: "",
+        element: <ProductList />,
+      },
+      {
+        path: "/Category",
+        element: <ProductList />,
+      },
+
+      {
+        path: "products",
+        element: <ProductList />,
+      },
+
+      {
+        path: "/product/:id",
+        element: <ProductDetail />,
+      },
+      {
+        path: "user",
       },
     ],
   },
-  {
-    path: "/product",
-    element: <ProductList />,
-  },
-  {
-    path: "/product/:id",
-    element: <ProductDetail />,
-  },
+
   {
     path: "/",
     element: <RejectedRoute />,
@@ -105,40 +119,40 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: <ListUser />,
-        children: [
-          {
-            path: "listuser",
-            element: <ListProduct />,
-          },
-          {
-            path: "add",
-            element: <Adduser />,
-          },
-          {
-            path: "edit/:id",
-            element: <Adduser />,
-          },
-          {
-            path: ":id",
-            element: <Adduser />,
-          },
-        ],
       },
+
+      {
+        path: "users/listuser",
+        element: <ListProduct />,
+      },
+      {
+        path: "users/add",
+        element: <Adduser />,
+      },
+      {
+        path: "users/:id/edit",
+        element: <Adduser />,
+      },
+      {
+        path: "users/:id",
+        element: <Adduser />,
+      },
+
       {
         path: "",
         element: <Dashboard />,
       },
       {
-        path: "students",
-        element: <Students />,
+        path: "category",
+        element: <ListCate />,
       },
       {
-        path: "students/:id",
-        element: <AddStudent />,
+        path: "category/:id/edit",
+        element: <Addcate />,
       },
       {
-        path: "students/add",
-        element: <AddStudent />,
+        path: "category/add",
+        element: <Addcate />,
       },
     ],
   },

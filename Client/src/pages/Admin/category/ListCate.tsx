@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { deleteProducts, productList1 } from "../../../Apis/products";
 import { toast } from "react-toastify";
-import { cateList } from "../../../Apis/category";
-import { IProduct } from "../../../types/products.type";
+import { cateList, deleteCate } from "../../../Apis/category";
+import { ICategory } from "../../../types/category.type";
 
-type ProductType = Omit<IProduct, "description">[];
-export default function ListProduct() {
+type ProductType =Pick<ICategory, "name"|"_id">[]
+
+export default function ListCate() {
   // get category list
   const { data: categoryList } = useQuery({
     queryKey: ["getCategory"],
@@ -24,18 +24,18 @@ export default function ListProduct() {
   // delete
   // product
   const deleteProductsMutation = useMutation({
-    mutationFn: (id: string) => deleteProducts({ id, accessToken }),
+    mutationFn: (id: string) => deleteCate({ id, accessToken }),
     onSuccess: (data, id) => {
       toast.success("Xoa thanh cong");
     },
   });
 
   const getDataList = useQuery({
-    queryKey: ["Products"],
-    queryFn: productList1,
-    onSuccess: ({data}) => {
-      console.log(data.docs ,"product")
-      setProductList(data.docs);
+    queryKey: ["category"],
+    queryFn: cateList,
+    onSuccess: ({ data }) => {
+     
+      setProductList(data);
     },
   });
 
@@ -43,7 +43,7 @@ export default function ListProduct() {
     setProductList(products.filter((item) => item._id !== id));
     deleteProductsMutation.mutateAsync(id);
   };
-  console.log(categoryList?.data);
+ 
   return (
     <>
       <>
@@ -52,26 +52,19 @@ export default function ListProduct() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
-                  Product name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Image
-                </th>
-                <th scope="col" className="px-6 py-3">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3">
-                  Price
-                </th>
+
                 <th scope="col" colSpan={2} className="px-6 text-center py-3">
-                  <Link to="/admin/product/add" className="p-2  text-blue-600">
+                  <Link to="/admin/category/add" className="p-2  text-blue-600">
                     Add
                   </Link>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {products && products.length > 0 &&
+              {products &&
+                products.length > 0 &&
                 products.map((product) => (
                   <tr
                     key={product._id}
@@ -83,23 +76,10 @@ export default function ListProduct() {
                     >
                       {product.name}
                     </th>
-                    <td className="px-6 py-4">
-                      <img className="w-44" src={product.image} alt={product.name} />
-                    </td>
-                    <td className="px-6 py-4">
-                      {categoryList?.data &&
-                        categoryList?.data.map((item) => {
-                          if (item._id === product.categoryId) {
-                            return item.name;
-                          }
-                        })}
-                    </td>
-                    <td className="px-6 py-4">
-                      {product.price ? product.price : "1000"}
-                    </td>
+
                     <td className="px-6 py-4 text-right">
                       <Link
-                        to={`/admin/product/${product._id}/edit`}
+                        to={`/admin/category/${product._id}/edit`}
                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                       >
                         Edit
@@ -119,7 +99,7 @@ export default function ListProduct() {
           </table>
         </div>
       </>
-      <Outlet />
+     
     </>
   );
 }

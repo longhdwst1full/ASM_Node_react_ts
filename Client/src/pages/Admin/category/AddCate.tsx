@@ -1,41 +1,30 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DataAuthResponse } from "../../../types/auth";
+import {  useMemo,  } from "react";
+
 import * as yup from "yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import {
-  createProducts,
-  getOneProduct,
-  udpateProducts,
-} from "../../../Apis/products";
 import { useMatch, useNavigate, useParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { cateList } from "../../../Apis/category";
 import { toast } from "react-toastify";
-import { IProduct } from "../../../types/products.type";
+import { ICategory } from "../../../types/category.type";
+import { DataAuthResponse } from "../../../types/auth";
+import { createCate, getOneCate, udpateCate } from "../../../Apis/category";
+
 
 const validateForm = yup.object({
   name: yup.string().required(),
-  description: yup.string().required(),
-  categoryId: yup.string().required(),
-  image: yup.string().required(),
-  price: yup.string().required(),
 });
 
-type ProductForm = Omit<IProduct, "_id" | "createdAt" | "updatedAt">;
+type ProductForm = Pick<ICategory,"name">
 const initiaFormState = {
   name: "",
-  description: "",
-  image: "",
-  price: "",
-  categoryId: "",
 };
 type FormData = yup.InferType<typeof validateForm>;
 
-export default function Addproduct() {
+export default function Addcate() {
   const { id } = useParams();
   const idParams = id as string;
-  const isEdeting = useMatch("/admin/product/add");
+  const isEdeting = useMatch("/admin/category/add");
   const isModel = Boolean(isEdeting);
   const navigate = useNavigate();
   const authentication = useMemo(() => {
@@ -61,7 +50,7 @@ export default function Addproduct() {
 
   const addProductMutation = useMutation({
     mutationFn: (body: ProductForm) =>
-      createProducts({ data: body, authentication: authentication }),
+    createCate({ data: body, authentication: authentication }),
     onError(error, variables, context) {
       console.log(error);
       console.log(variables, "variables");
@@ -70,14 +59,14 @@ export default function Addproduct() {
       // console.log(data, "data mutation");
       reset();
       toast.success("them thanh cong");
-      navigate("/admin/products");
+      navigate("/admin/category");
     },
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: (body: Omit<IProduct, "_id">) => {
+    mutationFn: (body:FormData) => {
       console.log("check id , authe", id, authentication, body);
-      return udpateProducts({
+      return udpateCate({
         body,
         id: idParams,
         accessToken: authentication,
@@ -91,28 +80,19 @@ export default function Addproduct() {
       // console.log(data, "data mutation");
       reset();
       toast.success("Sua thanh cong");
-      navigate("/admin/products");
+      navigate("/admin/category");
     },
   });
   const editQuery = useQuery({
-    queryKey: ["products", id],
-    queryFn: () => getOneProduct(id as string),
+    queryKey: ["category", id],
+    queryFn: () => getOneCate(id as string),
     enabled: id !== undefined,
     onSuccess({ data }) {
       console.log(data);
       setValue("name", data.name);
-      setValue("price", data.price);
-      setValue("image", data.image);
-      setValue("categoryId", data.categoryId);
-      setValue("description", data.description);
     },
   });
-  // getCategory
 
-  const { data: categoryList } = useQuery({
-    queryKey: ["getCategory"],
-    queryFn: cateList,
-  });
 
   const handleSubmitForm = async (data: FormData) => {
     try {
@@ -121,7 +101,7 @@ export default function Addproduct() {
         console.log("data: ", dataRes);
       } else {
         console.log("check mutaition :", data);
-        updateProductMutation.mutate(data as Omit<IProduct, "_id">);
+        updateProductMutation.mutate(data );
       }
     } catch (error) {
       console.log(error);
@@ -151,82 +131,6 @@ export default function Addproduct() {
             {...register("name")}
           />
           <p className="text-red-500 my-1">{errors.name?.message}</p>
-        </div>
-        <div className="mb-6 grid grid-cols-2 gap-4">
-          <div>
-            <fieldset className="w-full space-y-1 dark:text-gray-100">
-              <label htmlFor="price" className="block text-sm font-medium">
-                Price
-              </label>
-              <div className="flex">
-                <input
-                  type="number"
-                  {...register("price")}
-                  id="price"
-                  placeholder="99 999,99"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                />
-              </div>
-              <p className="text-red-500 my-1">{errors.price?.message}</p>
-            </fieldset>
-          </div>
-          <div>
-            <label
-              htmlFor="countries"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Category
-            </label>
-
-            <select
-              id="countries"
-              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-              {...register("categoryId")}
-            >
-              <option defaultChecked>Choose a </option>
-              {categoryList?.data &&
-                categoryList.data.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.name}
-                  </option>
-                ))}
-            </select>
-            <p className="text-red-500 my-1">{errors.categoryId?.message}</p>
-          </div>
-        </div>
-        <div className="mb-6">
-          <label
-            htmlFor="featuredImage"
-            className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300"
-          >
-            Featured Image
-          </label>
-          <input
-            type="text"
-            id="featuredImage"
-            {...register("image")}
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-            placeholder="Url image"
-          />
-          <p className="text-red-500 my-1">{errors.image?.message}</p>
-        </div>
-        <div className="mb-6">
-          <div>
-            <label
-              htmlFor="description"
-              className="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-400"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              rows={3}
-              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-              placeholder="Your description..."
-              {...register("description")}
-            />
-            <p className="text-red-500 my-1">{errors.description?.message}</p>
-          </div>
         </div>
 
         <div>

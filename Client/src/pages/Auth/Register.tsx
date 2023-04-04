@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { registerSubmit } from "../../Apis/auth";
 import { useNavigate } from "react-router-dom";
-import { AxiosError, DataAuthResponse } from "../../types";
+import { AxiosError, DataAuthResponse } from "../../types/auth";
 
 const registerSchema = yup.object({
   email: yup
@@ -41,11 +41,11 @@ export default function Register() {
       console.log(res);
       if (res) {
         alert(res.message);
-        localStorage.setItem("accessToken",res.accessToken)
-        localStorage.setItem("id",res.data._id)
+        localStorage.setItem("accessToken", res.accessToken);
+        localStorage.setItem("id", res.data._id);
         navigation("/");
       }
-    } catch (error:AxiosError<{data:string}>) {
+    } catch (error: AxiosError<{ data: string }>) {
       // const messageErr = [...errRespon, error];
       // setErrResponses(pre=>([...pre, messageErr]));
       console.log(error?.response?.data);

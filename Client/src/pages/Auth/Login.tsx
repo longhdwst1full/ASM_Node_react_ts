@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { UserLogin } from "../../types";
+import { UserLogin } from "../../types/auth";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { loginSubmit } from "../../Apis/auth";
@@ -27,21 +27,24 @@ export default function Login() {
     },
     resolver: yupResolver(validationSchema),
   });
-  const [form, setForm] = useState({ email: "", password: "" });
+
   const navigation = useNavigate();
   const handleSubmitForm = async (data: FormData) => {
     try {
       const res = await loginSubmit(data as UserLogin);
-      console.log(res);
-      if (res) {
-        console.log(res.data);
 
-        // const user= ;
+      if (res) {
         alert("Dang nhap thanh cong");
-        console.log(res);
+
         localStorage.setItem(
           "user",
-          JSON.stringify({ user: res.data, accessToken: res.accessToken })
+          JSON.stringify({
+            user: {
+              _id: res.data._id,
+              role: res.data.role,
+            },
+            accessToken: res.accessToken,
+          })
         );
 
         navigation("/");
