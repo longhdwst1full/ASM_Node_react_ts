@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { getUserList } from "../../../Apis/auth";
+import { deleteUser, getUserList } from "../../../Apis/auth";
 import { User } from "../../../types/auth";
 
 export default function ListUser() {
@@ -22,10 +22,11 @@ export default function ListUser() {
 
   const userList: User[] | [] = getDataListUser;
   const handleClick = (id: string) => {
-    //  const editUser=useMutation({
-    //   mutationKey:["deleteuser",id],
-    //   mutationFn:() =>
-    //  })
+    const clickdeleteUser = useMutation({
+      mutationKey: ["deleteuser", id],
+      mutationFn: () => deleteUser(id),
+      
+    });
   };
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">

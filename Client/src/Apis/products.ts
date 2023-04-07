@@ -15,7 +15,14 @@ const createProducts = ({
     },
   });
 
-const productList1 = async () => intace.get<IDataResponseProduct>("/products");
+const productList1 = async (query: {
+  _limit: number;
+  _page: number;
+  _sort: string;
+}) =>
+  await intace.get<IDataResponseProduct>(
+    `/products?_limit=5&_page=${query._page}`
+  );
 
 const getOneProduct = (id: string) => intace.get<IProduct>("/products/" + id);
 

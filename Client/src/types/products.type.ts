@@ -7,6 +7,7 @@ export interface IProduct {
   price: string;
   updatedAt: string;
   _id: string;
+  
 }
 
 export interface IDataResponseProduct {
