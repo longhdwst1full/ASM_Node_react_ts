@@ -19,9 +19,10 @@ const productList1 = async (query: {
   _limit: number;
   _page: number;
   _sort: string;
+  _order:string;
 }) =>
   await intace.get<IDataResponseProduct>(
-    `/products?_limit=5&_page=${query._page}`
+    `/products?_limit=${query._limit}&_page=${query._page}&_sort=${query._sort}&_order=${query._order}`
   );
 
 const getOneProduct = (id: string) => intace.get<IProduct>("/products/" + id);

@@ -1,12 +1,13 @@
-import Header from "./components/Header";
-import Home from "./pages/client/Home";
+import Banner from "./components/Banner";
+import ProductList from "./pages/client/Product/ProductList";
 
 function App() {
   return (
-    <div className="p-3">
-      <Header />
-      <Home />
-    </div>
+    <div className="container m-auto">
+      
+        <Banner />
+        <ProductList />
+      </div>
   );
 }
 

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { cateList, deleteCate } from "../../../Apis/category";
 import { ICategory } from "../../../types/category.type";
 
-type ProductType =Pick<ICategory, "name"|"_id">[]
+type ProductType = Pick<ICategory, "name" | "_id">[];
 
 export default function ListCate() {
   // get category list
@@ -34,7 +34,6 @@ export default function ListCate() {
     queryKey: ["category"],
     queryFn: cateList,
     onSuccess: ({ data }) => {
-     
       setProductList(data);
     },
   });
@@ -43,11 +42,14 @@ export default function ListCate() {
     setProductList(products.filter((item) => item._id !== id));
     deleteProductsMutation.mutateAsync(id);
   };
- 
+
   return (
     <>
       <>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <h1 className=" text-4xl font-semibold py-5 text-center">
+            List Category
+          </h1>
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -99,7 +101,6 @@ export default function ListCate() {
           </table>
         </div>
       </>
-     
     </>
   );
 }

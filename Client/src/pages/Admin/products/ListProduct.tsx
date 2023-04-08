@@ -7,12 +7,14 @@ import { toast } from "react-toastify";
 import { cateList } from "../../../Apis/category";
 import { IProduct } from "../../../types/products.type";
 
+const limit = 10;
 type ProductType = IProduct[];
 export default function ListProduct() {
   const [keyQuery, setKeyQuery] = useState({
-    _limit: 10,
+    _limit: limit,
     _page: 1,
-    _sort: "",
+    _sort: "createdAt",
+    _order: "asc",
   });
   // get category list
   const { data: categoryList } = useQuery({
@@ -37,25 +39,54 @@ export default function ListProduct() {
   });
 
   const getDataList = useQuery({
-    queryKey: ["Products",keyQuery],
-    queryFn: ()=>productList1(keyQuery),
+    queryKey: ["Products", keyQuery],
+    queryFn: () => productList1(keyQuery),
     onSuccess: ({ data }) => {
-      // console.log(data.docs, "product");
       setProductList(data.docs);
     },
   });
-  // console.log("product", getDataList.data?.data);
 
   const handleDelete = (id: string) => {
-    setProductList(products.filter((item) => item._id !== id));
-    deleteProductsMutation.mutateAsync(id);
+    const ab = confirm("Are you sure you want to delete");
+    if (ab) {
+      setProductList(products.filter((item) => item._id !== id));
+      deleteProductsMutation.mutateAsync(id);
+    }
   };
-  // console.log(categoryList?.data);
 
+  const handleOnchangSelected = (key: string) => {
+    // console.log(key)
+
+    setKeyQuery((pre) => {
+      if (key === "updatedAt"||key === "price_desc") {
+        return { ...pre, _sort: "price", _order: "desc" };
+      }
+      return { ...pre, _sort: key };
+    });
+  };
   return (
     <>
       {getDataList.data?.data && products && (
         <>
+          <h1 className=" text-4xl font-semibold py-5 text-center">
+            List Products
+          </h1>
+          <ul>
+            <li>
+              <select
+                name=""
+                onChange={(e) => {
+                  handleOnchangSelected(e.target.value);
+                }}
+                className="border p-2 border-red-200 rounded-lg my-2"
+              >
+                <option value="">Loc san pham</option>
+                <option value="price">Gia tăng dần</option>
+                <option value="price_desc">Gia giảm dần</option>
+                <option value="updatedAt">CreateAd </option>
+              </select>
+            </li>
+          </ul>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -98,7 +129,7 @@ export default function ListProduct() {
                       </th>
                       <td className="px-6 py-4">
                         <img
-                          className="w-44"
+                          className="!max-w-44 !object-cover !max-h-44"
                           src={product.image}
                           alt={product.name}
                         />
@@ -136,7 +167,17 @@ export default function ListProduct() {
             </table>
           </div>
           <div className="text-center">
-            <Pagination setKeyQuery={setKeyQuery} totalPage={getDataList.data?.data.totalPages} />
+            <Pagination
+              setKeyQuery={setKeyQuery}
+              totalPage={getDataList.data?.data.totalPages}
+              controlPage={{
+                hasPrevPage: getDataList.data.data.hasPrevPage,
+                hasNextPage: getDataList.data.data.hasNextPage,
+                prevPage: getDataList.data.data.prevPage,
+                nextPage: getDataList.data.data.nextPage,
+                page: getDataList.data.data.page,
+              }}
+            />
           </div>
         </>
       )}

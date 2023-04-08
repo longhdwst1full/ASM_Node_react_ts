@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import "flowbite";
 import "./index.css";
 import {
   createBrowserRouter,
@@ -16,17 +16,17 @@ import ListUser from "./pages/Admin/user/ListUser";
 import Addproduct from "./pages/Admin/products/Addproduct";
 import Adduser from "./pages/Admin/user/Adduser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ProductDetail from "./pages/client/Product/ProductDetail";
 import ProductList from "./pages/client/Product/ProductList";
-import Dashboard from "./pages/Admin/pages/Dashboard";
-import Students from "./pages/Admin/pages/Students";
+import Dashboard from "./pages/Admin/Dashboard";
 import NotFound from "./pages/client/NotFound";
-import AddStudent from "./pages/Admin/pages/category";
 import MainLayout from "./pages/Admin/layouts/MainLayout";
 import { ToastContainer } from "react-toastify";
 import LayoutManin from "./pages/client/LayoutManin";
 import ListCate from "./pages/Admin/category/ListCate";
 import Addcate from "./pages/Admin/category/AddCate";
+import DetailProduct from "./pages/client/Product/DetailProduct";
+import App from "./App";
+
 
 function RejectedRoute() {
   const dataLS = localStorage.getItem("user")
@@ -55,10 +55,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <ProductList />,
+        element: <App />,
       },
       {
-        path: "/Category",
+        path: "category",
         element: <ProductList />,
       },
 
@@ -68,8 +68,8 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/product/:id",
-        element: <ProductDetail />,
+        path: ":id/product",
+        element: <DetailProduct />,
       },
       {
         path: "user",
