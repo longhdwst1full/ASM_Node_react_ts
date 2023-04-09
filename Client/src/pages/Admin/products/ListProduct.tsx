@@ -8,7 +8,7 @@ import { cateList } from "../../../Apis/category";
 import { IProduct } from "../../../types/products.type";
 import { ISearch } from "../../client/Product/ProductList";
 
-const limit = 3;
+const limit = 10;
 type ProductType = IProduct[];
 export default function ListProduct() {
   const [keyQuery, setKeyQuery] = useState({
