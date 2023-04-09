@@ -39,8 +39,11 @@ export default function ListCate() {
   });
 
   const handleDelete = (id: string) => {
-    setProductList(products.filter((item) => item._id !== id));
-    deleteProductsMutation.mutateAsync(id);
+    const ab = confirm("Are you sure you want to delete");
+    if (ab) {
+      setProductList(products.filter((item) => item._id !== id));
+      deleteProductsMutation.mutateAsync(id);
+    }
   };
 
   return (

@@ -1,13 +1,14 @@
 import Pagination from "../../../components/Pagination";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useSearchParams } from "react-router-dom";
 import { deleteProducts, productList1 } from "../../../Apis/products";
 import { toast } from "react-toastify";
 import { cateList } from "../../../Apis/category";
 import { IProduct } from "../../../types/products.type";
+import { ISearch } from "../../client/Product/ProductList";
 
-const limit = 10;
+const limit = 3;
 type ProductType = IProduct[];
 export default function ListProduct() {
   const [keyQuery, setKeyQuery] = useState({
@@ -31,21 +32,27 @@ export default function ListProduct() {
   }, []);
   // delete
   // product
-  const deleteProductsMutation = useMutation({
-    mutationFn: (id: string) => deleteProducts({ id, accessToken }),
-    onSuccess: (data, id) => {
-      toast.success("Xoa thanh cong");
-    },
-  });
-
+  const [searchParams] = useSearchParams();
+  // console.log("searchParams: ", );
+  const getSearchParam = useMemo(
+    () => Object.fromEntries([...searchParams]),
+    [Object.fromEntries([...searchParams])]
+  );
+  const keySearch: ISearch = {
+    _limit: Number(getSearchParam._limit) || limit,
+    _page: Number(getSearchParam._page) || 1,
+    _sort: getSearchParam._sort,
+    _order: getSearchParam._order || "asc",
+  };
   const getDataList = useQuery({
-    queryKey: ["Products", keyQuery],
-    queryFn: () => productList1(keyQuery),
+    queryKey: ["Products", keySearch],
+    queryFn: () => productList1(keySearch),
     onSuccess: ({ data }) => {
       setProductList(data.docs);
     },
   });
-
+  
+  
   const handleDelete = (id: string) => {
     const ab = confirm("Are you sure you want to delete");
     if (ab) {
@@ -58,12 +65,20 @@ export default function ListProduct() {
     // console.log(key)
 
     setKeyQuery((pre) => {
-      if (key === "updatedAt"||key === "price_desc") {
+      if (key === "updatedAt" || key === "price_desc") {
         return { ...pre, _sort: "price", _order: "desc" };
       }
       return { ...pre, _sort: key };
     });
   };
+
+  const deleteProductsMutation = useMutation({
+    mutationFn: (id: string) => deleteProducts({ id, accessToken }),
+    onSuccess: (data, id) => {
+      toast.success("Xoa thanh cong");
+    },
+  });
+
   return (
     <>
       {getDataList.data?.data && products && (
@@ -168,7 +183,7 @@ export default function ListProduct() {
           </div>
           <div className="text-center">
             <Pagination
-              setKeyQuery={setKeyQuery}
+              setKeyQuery={keySearch}
               totalPage={getDataList.data?.data.totalPages}
               controlPage={{
                 hasPrevPage: getDataList.data.data.hasPrevPage,

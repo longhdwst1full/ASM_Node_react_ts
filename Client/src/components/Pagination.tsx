@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useMatch, useNavigate } from "react-router-dom";
 import { IDataResponseProduct } from "../types/products.type";
+import { ISearch } from "../pages/client/Product/ProductList";
 interface Props {
   controlPage: {
     hasPrevPage: Boolean;
@@ -9,34 +10,50 @@ interface Props {
     page: number;
   };
   totalPage: IDataResponseProduct | {};
-  setKeyQuery: React.Dispatch<
-    React.SetStateAction<{
-      _limit: number;
-    _page: number;
-    _sort: string;
-    _order: string;
-    }>
-  >;
+  setKeyQuery: ISearch;
 }
+
 export default function Pagination({
   setKeyQuery,
   totalPage,
   controlPage,
 }: Props) {
-  console.log("queryProducts");
-  // if(!queryProducts.docs) return null;
+  const adminPage = useMatch("/admin/*");
+  const isModel = Boolean(adminPage);
+  const navigate = useNavigate();
+
+  const handleSort = (value: string | number) => {
+    console.log(value);
+    const params = new URLSearchParams();
+    params.set("_order", setKeyQuery._order || "");
+    params.set("_limit", setKeyQuery._limit.toString());
+    params.set("_page", value as string);
+    params.set("_sort", setKeyQuery._sort || "");
+
+    navigate({
+      pathname: isModel ? "/admin/products" : "/",
+      search: params.toString(),
+    });
+  };
+ 
   return (
     <nav aria-label="Page navigation example">
       <ul className="inline-flex items-center -space-x-px">
         <li>
           <Link
-            to="/admin/products"
-            onClick={() => {
-              if (controlPage.hasPrevPage && controlPage.prevPage) {
-                let number_page = controlPage.prevPage;
-                setKeyQuery((pre) => ({ ...pre, _page: number_page }));
-              }
-            }}
+            to={
+              isModel
+                ? `/admin/products?_page=${
+                    controlPage.hasPrevPage && controlPage.prevPage
+                      ? controlPage.prevPage
+                      : controlPage.page
+                  }`
+                : `?_page=${
+                    controlPage.hasPrevPage && controlPage.prevPage
+                      ? controlPage.prevPage
+                      : controlPage.page
+                  }`
+            }
             className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           >
             <span className="sr-only">Previous</span>
@@ -61,10 +78,12 @@ export default function Pagination({
             return (
               <li key={index + "df"}>
                 <Link
-                  onClick={() =>
-                    setKeyQuery((pre) => ({ ...pre, _page: index + 1 }))
+                  onClick={() => handleSort(index + 1)}
+                  to={
+                    isModel
+                      ? `/admin/products?_page=${index + 1}`
+                      : `?_page=${index + 1}`
                   }
-                  to={`/admin/products?_page=${index + 1}`}
                   className={`px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700  
                   ${controlPage.page === index + 1 ? "!bg-green-400" : ""}`}
                 >
@@ -76,13 +95,19 @@ export default function Pagination({
           })}
         <li>
           <Link
-            onClick={() => {
-              if (controlPage.hasNextPage && controlPage.nextPage) {
-                let number_page = controlPage.nextPage;
-                setKeyQuery((pre) => ({ ...pre, _page: number_page }));
-              }
-            }}
-            to="/admin/products"
+            to={
+              isModel
+                ? `/admin/products?_page=${
+                    controlPage.hasNextPage && controlPage.nextPage
+                      ? controlPage.nextPage
+                      : controlPage.page
+                  }`
+                : `?_page=${
+                    controlPage.hasNextPage && controlPage.nextPage
+                      ? controlPage.nextPage
+                      : controlPage.page
+                  }`
+            }
             className={`block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white `}
           >
             <span className="sr-only">Next</span>

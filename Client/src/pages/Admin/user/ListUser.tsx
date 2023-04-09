@@ -30,6 +30,9 @@ export default function ListUser() {
   };
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
+        <h1 className=" text-4xl font-semibold py-5 text-center">
+            List User
+          </h1>
       <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
         <thead className="bg-gray-50">
           <tr>
