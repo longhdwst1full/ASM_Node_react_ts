@@ -1,11 +1,13 @@
 
-import { useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { ISearch } from "../pages/client/Product/ProductList";
 interface Props {
   keyQuery:ISearch
 }
 export default function SortProducts({ keyQuery }: Props) {
   const navigate = useNavigate();
+  const adminPage = useMatch("/admin/*");
+  const isModel = Boolean(adminPage);
 
   const handleSort = (value :string) => {
     const params = new URLSearchParams();
@@ -15,7 +17,7 @@ export default function SortProducts({ keyQuery }: Props) {
     params.set('_sort', value);
 
     navigate({
-      pathname: "/",
+      pathname: isModel ? "/admin/products" : "/",
       search: params.toString(),
     });
   };
@@ -28,7 +30,7 @@ export default function SortProducts({ keyQuery }: Props) {
     params.set('_sort', keyQuery._sort);
   
     navigate({
-      pathname: "/",
+      pathname: isModel ? "/admin/products" : "/",
       search: params.toString(),
     });
   };

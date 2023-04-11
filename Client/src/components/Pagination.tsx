@@ -23,7 +23,7 @@ export default function Pagination({
   const navigate = useNavigate();
 
   const handleSort = (value: string | number) => {
-    console.log(value);
+    // console.log(value);
     const params = new URLSearchParams();
     params.set("_order", setKeyQuery._order || "");
     params.set("_limit", setKeyQuery._limit.toString());

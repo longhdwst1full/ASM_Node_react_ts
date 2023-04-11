@@ -7,8 +7,9 @@ import { toast } from "react-toastify";
 import { cateList } from "../../../Apis/category";
 import { IProduct } from "../../../types/products.type";
 import { ISearch } from "../../client/Product/ProductList";
+import SortProducts from "../../../components/SortProducts";
 
-const limit = 10;
+const limit = 5;
 type ProductType = IProduct[];
 export default function ListProduct() {
   const [keyQuery, setKeyQuery] = useState({
@@ -51,8 +52,7 @@ export default function ListProduct() {
       setProductList(data.docs);
     },
   });
-  
-  
+
   const handleDelete = (id: string) => {
     const ab = confirm("Are you sure you want to delete");
     if (ab) {
@@ -81,12 +81,14 @@ export default function ListProduct() {
 
   return (
     <>
+
       {getDataList.data?.data && products && (
         <>
           <h1 className=" text-4xl font-semibold py-5 text-center">
             List Products
           </h1>
-          <ul>
+        <SortProducts keyQuery={keySearch}/>
+          {/* <ul>
             <li>
               <select
                 name=""
@@ -101,7 +103,7 @@ export default function ListProduct() {
                 <option value="updatedAt">CreateAd </option>
               </select>
             </li>
-          </ul>
+          </ul> */}
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

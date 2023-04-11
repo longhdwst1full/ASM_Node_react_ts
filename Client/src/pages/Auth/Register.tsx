@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { registerSubmit } from "../../Apis/auth";
 import { useNavigate } from "react-router-dom";
 import { AxiosError, DataAuthResponse } from "../../types/auth";
+import { toast } from "react-toastify";
 
 const registerSchema = yup.object({
   email: yup
@@ -40,10 +41,10 @@ export default function Register() {
       const res = await registerSubmit(data);
       console.log(res);
       if (res) {
-        alert(res.message);
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("id", res.data._id);
-        navigation("/");
+        
+        toast.success("Đăng kí thành công")
+        
+        navigation("/login");
       }
     } catch (error: AxiosError<{ data: string }>) {
       // const messageErr = [...errRespon, error];

@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { loginSubmit } from "../../Apis/auth";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const validationSchema = yup.object({
   email: yup

@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Footer() {
   return (
     <div className="border-t-[1px] mt-14 border-gray-100 ">
@@ -13,12 +11,47 @@ export default function Footer() {
               Gặp trực tiếp cửa hàng gần nhất (Zalo hoặc gọi điện)
             </p>
             <p className="mb-1.5">Phương thức thanh toán</p>
-            <div className=" mt-2 flex flex-wrap gap-3">
-              <img className="object-cover w-[20%]" src="./Rectangle (5).png" alt="" />
-              <img className="object-cover w-[20%]" src="./Rectangle (5).png" alt="" />
-              <img className="object-cover w-[20%]" src="./Rectangle (5).png" alt="" />
-              <img className="object-cover w-[20%]" src="./Rectangle (5).png" alt="" />
-              <img className="object-cover w-[20%]" src="./Rectangle (5).png" alt="" />
+            <div className="  mt-2 grid grid-cols-4 gap-3">
+              <div className="  h-8 col-span-1">
+                <img
+                  className="  block"
+                  src="../../public/Rectangle (3).png"
+                  alt=""
+                />
+              </div>
+              <div className="  h-8 col-span-1">
+                <img
+                  className="  block"
+                  src="../../public/Rectangle (4).png"
+                  alt=""
+                />
+              </div>
+              <div className="  h-8 col-span-1">
+                <img
+                  className="  block"
+                  src="../../public/Rectangle (5).png"
+                  alt=""
+                />
+              </div>
+              <div className="  h-8 col-span-1">
+                <img
+                  className="  block"
+                  src="../../public/Rectangle (7).png"
+                  alt=""
+                />
+              </div>
+              <div className="  h-8 col-span-1">
+                <img
+                  className="  block"
+                  src="../../public/Rectangle (5).png"
+                  alt=""
+                />
+              </div>
+              
+              {/* <img className="object-cover absolute top-0 left-0 " src="../../public/Rectangle (4).png" alt="" />
+              <img className="object-cover absolute top-0 left-0 " src="../../public/Rectangle (5).png" alt="" />
+              <img className="object-cover absolute top-0 left-0 " src="../../public/Rectangle (7).png" alt="" />
+              <img className="object-cover absolute top-0 left-0 " src="../../public/Rectangle (5).png" alt="" /> */}
             </div>
           </div>
           <div className="flex- flex-col">
@@ -36,7 +69,11 @@ export default function Footer() {
             <p className="mb-1.5 text-md mt-3.5">
               Trung tâm bảo hành uỷ quyền Apple
             </p>
-            <img className="h-[40px] mt-2.5 " src="./Rectangle (6).png" alt="" />
+            <img
+              className="h-[40px] mt-2.5 "
+              src="../../public/Rectangle (6).png"
+              alt=""
+            />
           </div>
           <ul>
             <li className="mb-1.5">Mua hàng và thanh toán Online</li>

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { productList1 } from "../../../Apis/products";
-import { useEffect, useMemo, useState } from "react";
+import {   useMemo, useState } from "react";
 import Product from "../../../components/Product";
 import Pagination from "../../../components/Pagination";
 import SortProducts from "../../../components/SortProducts";
